@@ -48,8 +48,6 @@ def send_telegram():
     )
 
 def main():
-    send_telegram()
-    return
     current_hash = get_page_hash()
     last_hash = load_last_hash()
     
