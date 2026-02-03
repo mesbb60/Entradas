@@ -1,16 +1,13 @@
 import requests
 import hashlib
 import os
-import smtplib
-from email.mime.text import MIMEText
 from bs4 import BeautifulSoup
 
 URL = "https://entradas.7yaccion.com/o/2/el-hormiguero"
 HASH_FILE = "last_hash.txt"
 
-EMAIL_FROM = os.environ["EMAIL_FROM"]
-EMAIL_TO = "mesbb60@gmail.com"
-EMAIL_PASSWORD = os.environ["EMAIL_PASSWORD"]
+TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
+CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
 def get_page_hash():
     r = requests.get(URL, timeout=20)
@@ -18,7 +15,6 @@ def get_page_hash():
 
     soup = BeautifulSoup(r.text, "html.parser")
 
-    # Limpiamos cosas volátiles
     for tag in soup(["script", "style"]):
         tag.decompose()
 
@@ -35,27 +31,30 @@ def save_hash(h):
     with open(HASH_FILE, "w") as f:
         f.write(h)
 
-def send_email():
-    msg = MIMEText(
-        f"La web ha cambiado:\n\n{URL}",
-        "plain",
-        "utf-8"
+def send_telegram():
+    msg = (
+        "🚨 *Cambio detectado en El Hormiguero*\n\n"
+        f"{URL}"
     )
-    msg["Subject"] = "🚨 Cambio detectado en El Hormiguero"
-    msg["From"] = EMAIL_FROM
-    msg["To"] = EMAIL_TO
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(EMAIL_FROM, EMAIL_PASSWORD)
-        server.send_message(msg)
+    requests.post(
+        f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+        data={
+            "chat_id": CHAT_ID,
+            "text": msg,
+            "parse_mode": "Markdown"
+        },
+        timeout=10
+    )
 
 def main():
     current_hash = get_page_hash()
     last_hash = load_last_hash()
+    send_telegram()
 
     if last_hash and current_hash != last_hash:
-        print("Cambio detectado, enviando email")
-        send_email()
+        print("Cambio detectado → Telegram")
+        send_telegram()
     else:
         print("Sin cambios")
 
