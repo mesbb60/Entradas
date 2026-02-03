@@ -48,9 +48,11 @@ def send_telegram():
     )
 
 def main():
+    send_telegram()
+    return
     current_hash = get_page_hash()
     last_hash = load_last_hash()
-    send_telegram()
+    
 
     if last_hash and current_hash != last_hash:
         print("Cambio detectado → Telegram")
