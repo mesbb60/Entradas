@@ -1,0 +1,16 @@
+name: Cron Fresh Test
+
+on:
+  # Ejecutar cada 5 minutos
+  schedule:
+    - cron: "*/5 * * * *"
+  # Permite ejecución manual para pruebas
+  workflow_dispatch:
+
+jobs:
+  test-cron:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Confirm cron execution
+        run: echo "Cron funcionando correctamente"
