@@ -3,8 +3,7 @@ import hashlib
 import os
 from bs4 import BeautifulSoup
 
-URL = "https://entradas.7yaccion.com/e/954/el-hormiguero-jueves-12-de-febrero-de-2026"
-HASH_FILE = "last_hash.txt"
+URL = "https://entradas.7yaccion.com/o/2/el-hormiguero"
 
 TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
